@@ -1,4 +1,7 @@
-use std::env::{self, Args};
+use std::{
+    env::{self, Args},
+    ops::{Shl, Shr},
+};
 
 fn parse_args(args: Args) -> Vec<String> {
     let mut out = Vec::new();
@@ -99,9 +102,23 @@ fn calc(args: Vec<String>) {
                                     }
                                     "gcd" => {
                                         if a.fract() == 0.0 && b.fract() == 0.0 {
-                                            stack.push(gcd(a as u64, b as u64) as f64);
+                                            stack.push(gcd(b as u64, a as u64) as f64);
                                         } else {
                                             eprintln!("gcd: requires integer operands");
+                                        }
+                                    }
+                                    "<<" => {
+                                        if a.fract() == 0.0 && b.fract() == 0.0 {
+                                            stack.push((b as u64).shl(a as u64) as f64);
+                                        } else {
+                                            eprintln!("<<: requires integer operands");
+                                        }
+                                    }
+                                    ">>" => {
+                                        if a.fract() == 0.0 && b.fract() == 0.0 {
+                                            stack.push((a as u64).shr(b as u64) as f64);
+                                        } else {
+                                            eprintln!(">>: requires integer operands");
                                         }
                                     }
                                     "or" => {
