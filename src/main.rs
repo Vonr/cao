@@ -1,23 +1,42 @@
 use std::{
-    env::{self, Args},
+    env,
+    io::{self, BufRead},
     ops::{Shl, Shr},
 };
 
-fn parse_args(args: Args) -> Vec<String> {
-    let mut out = Vec::new();
-    for arg in args {
-        for op in arg.split_ascii_whitespace() {
-            out.push(op.to_owned());
+fn parse_args() {
+    let istty = atty::is(atty::Stream::Stdin);
+
+    if istty {
+        let args = env::args();
+        let mut out = Vec::new();
+        for arg in args {
+            for op in arg.split_ascii_whitespace() {
+                out.push(op.to_owned());
+            }
+        }
+        calc(&out);
+    } else {
+        let stdin = io::stdin().lock();
+        let mut out = Vec::new();
+        for line in stdin.lines() {
+            if let Ok(line) = line {
+                out.push("".to_owned());
+                for word in line.split_ascii_whitespace() {
+                    out.push(word.to_owned());
+                }
+                calc(&out);
+                out.clear();
+            }
         }
     }
-    out
 }
 
 fn main() {
-    calc(parse_args(env::args()));
+    parse_args();
 }
 
-fn calc(args: Vec<String>) {
+fn calc(args: &Vec<String>) {
     let mut stack: Vec<f64> = Vec::with_capacity(8);
     for arg in args.into_iter().skip(1) {
         match arg.parse() {
@@ -168,8 +187,9 @@ fn calc(args: Vec<String>) {
         }
     }
     for num in stack {
-        println!("{}", num);
+        print!("{} ", num);
     }
+    println!();
 }
 
 fn gcd(mut a: u64, mut b: u64) -> u64 {
