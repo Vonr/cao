@@ -31,6 +31,10 @@ fn calc(args: Vec<String>) {
                     _ => {
                         let a = stack.pop().unwrap();
                         match op.as_ref() {
+                            "dup" => {
+                                stack.push(a);
+                                stack.push(a)
+                            }
                             "abs" => stack.push(a.abs()),
                             "sqrt" => stack.push(a.sqrt()),
                             "sin" => stack.push(a.sin()),
@@ -94,6 +98,11 @@ fn calc(args: Vec<String>) {
                                     ">" => stack.push((b > a) as u8 as f64),
                                     "<=" => stack.push((b <= a) as u8 as f64),
                                     ">=" => stack.push((b >= a) as u8 as f64),
+                                    "over" => {
+                                        stack.push(a);
+                                        stack.push(b);
+                                        stack.push(a);
+                                    }
                                     "min" => stack.push(a.min(b)),
                                     "max" => stack.push(a.max(b)),
                                     "dp" => {
