@@ -99,9 +99,13 @@ fn calc(args: Vec<String>) {
                                     "<=" => stack.push((b <= a) as u8 as f64),
                                     ">=" => stack.push((b >= a) as u8 as f64),
                                     "over" => {
-                                        stack.push(a);
                                         stack.push(b);
                                         stack.push(a);
+                                        stack.push(b);
+                                    }
+                                    "swap" => {
+                                        stack.push(a);
+                                        stack.push(b);
                                     }
                                     "min" => stack.push(a.min(b)),
                                     "max" => stack.push(a.max(b)),
