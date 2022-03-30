@@ -128,13 +128,6 @@ fn calc(args: Vec<String>) {
                                             eprintln!("or: requires integer operands");
                                         }
                                     }
-                                    "uor" => {
-                                        if a.fract() == 0.0 && b.fract() == 0.0 {
-                                            stack.push((b as u64 | a as u64) as f64);
-                                        } else {
-                                            eprintln!("or: requires integer operands");
-                                        }
-                                    }
                                     "and" => {
                                         if a.fract() == 0.0 && b.fract() == 0.0 {
                                             stack.push((b as i64 & a as i64) as f64);
@@ -145,20 +138,6 @@ fn calc(args: Vec<String>) {
                                     "xor" => {
                                         if a.fract() == 0.0 && b.fract() == 0.0 {
                                             stack.push((b as i64 ^ a as i64) as f64);
-                                        } else {
-                                            eprintln!("xor: requires integer operands");
-                                        }
-                                    }
-                                    "uand" => {
-                                        if a.fract() == 0.0 && b.fract() == 0.0 {
-                                            stack.push((b as u64 & a as u64) as f64);
-                                        } else {
-                                            eprintln!("and: requires integer operands");
-                                        }
-                                    }
-                                    "uxor" => {
-                                        if a.fract() == 0.0 && b.fract() == 0.0 {
-                                            stack.push((b as u64 ^ a as u64) as f64);
                                         } else {
                                             eprintln!("xor: requires integer operands");
                                         }
