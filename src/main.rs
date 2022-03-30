@@ -2,6 +2,7 @@ use std::{
     env,
     io::{self, BufRead},
     ops::{Shl, Shr},
+    u128,
 };
 
 fn parse_args() {
@@ -38,6 +39,7 @@ fn main() {
 
 fn calc(args: &Vec<String>) {
     let mut stack: Vec<f64> = Vec::with_capacity(8);
+
     for arg in args.into_iter().skip(1) {
         match arg.parse() {
             Ok(num) => stack.push(num),
@@ -47,6 +49,67 @@ fn calc(args: &Vec<String>) {
                     "pi" => stack.push(std::f64::consts::PI),
                     "tau" => stack.push(std::f64::consts::TAU),
                     "e" => stack.push(std::f64::consts::E),
+                    "sum" => {
+                        let mut sum = 0.0;
+                        for num in stack.drain(..) {
+                            sum += num;
+                        }
+                        stack.push(sum);
+                    }
+                    "mean" => {
+                        let mut sum = 0.0;
+                        let length = stack.len() as f64;
+                        for num in stack.drain(..) {
+                            sum += num;
+                        }
+                        stack.push(sum / length);
+                    }
+                    "prod" => {
+                        let mut prod = 1.0;
+                        for num in stack.drain(..) {
+                            prod *= num;
+                        }
+                        stack.push(prod);
+                    }
+                    "gmin" => {
+                        let mut min = std::f64::MAX;
+                        for num in stack.drain(..) {
+                            if num < min {
+                                min = num;
+                            }
+                        }
+                        stack.push(min);
+                    }
+                    "gmax" => {
+                        let mut max = std::f64::MIN;
+                        for num in stack.drain(..) {
+                            if num > max {
+                                max = num;
+                            }
+                        }
+                        stack.push(max);
+                    }
+                    "sd" => {
+                        let mut sum = 0.0;
+                        let mut sum_sq = 0.0;
+                        let size = stack.len() as f64;
+                        for num in stack.drain(..) {
+                            sum += num;
+                            sum_sq += num * num;
+                        }
+                        let mean = sum / size;
+                        stack.push((sum_sq / size - mean * mean).sqrt())
+                    }
+                    "eq" => {
+                        let mut eq = true;
+                        let mut last = stack.pop().unwrap();
+                        for num in stack.drain(..) {
+                            eq = eq && num == last;
+                            last = num;
+                        }
+                        stack.push(eq as u8 as f64);
+                    }
+
                     _ => {
                         let a = stack.pop().unwrap();
                         match op.as_ref() {
@@ -54,6 +117,7 @@ fn calc(args: &Vec<String>) {
                                 stack.push(a);
                                 stack.push(a)
                             }
+                            "pop" => {}
                             "abs" => stack.push(a.abs()),
                             "sqrt" => stack.push(a.sqrt()),
                             "sin" => stack.push(a.sin()),
@@ -62,6 +126,20 @@ fn calc(args: &Vec<String>) {
                             "ln" => stack.push(a.ln()),
                             "log" => stack.push(a.log10()),
                             "log2" => stack.push(a.log2()),
+                            "fac" => {
+                                if a.fract() == 0.0 {
+                                    stack.push(fac(a as u128) as f64)
+                                } else {
+                                    eprintln!("fac: requires integer operand");
+                                }
+                            }
+                            "fib" => {
+                                if a.fract() == 0.0 {
+                                    stack.push(fib(a as u128) as f64)
+                                } else {
+                                    eprintln!("fib: requires integer operand");
+                                }
+                            }
                             "ceil" => stack.push(a.ceil()),
                             "floor" => stack.push(a.floor()),
                             "round" => stack.push(a.round()),
@@ -100,6 +178,7 @@ fn calc(args: &Vec<String>) {
                                     eprintln!("not: requires integer operand");
                                 }
                             }
+
                             _ => {
                                 let b = stack.pop().unwrap();
                                 match op.as_ref() {
@@ -117,6 +196,15 @@ fn calc(args: &Vec<String>) {
                                     ">" => stack.push((b > a) as u8 as f64),
                                     "<=" => stack.push((b <= a) as u8 as f64),
                                     ">=" => stack.push((b >= a) as u8 as f64),
+                                    "seq" => {
+                                        if a.fract() == 0.0 && b.fract() == 0.0 {
+                                            for i in b as u64..a as u64 {
+                                                stack.push(i as f64);
+                                            }
+                                        } else {
+                                            eprintln!("seq: requires integer operands");
+                                        }
+                                    }
                                     "over" => {
                                         stack.push(b);
                                         stack.push(a);
@@ -134,7 +222,7 @@ fn calc(args: &Vec<String>) {
                                     }
                                     "gcd" => {
                                         if a.fract() == 0.0 && b.fract() == 0.0 {
-                                            stack.push(gcd(b as u64, a as u64) as f64);
+                                            stack.push(gcd(b as u128, a as u128) as f64);
                                         } else {
                                             eprintln!("gcd: requires integer operands");
                                         }
@@ -174,6 +262,7 @@ fn calc(args: &Vec<String>) {
                                             eprintln!("xor: requires integer operands");
                                         }
                                     }
+
                                     _ => {
                                         eprintln!("{}: invalid operator", arg);
                                         return;
@@ -192,11 +281,31 @@ fn calc(args: &Vec<String>) {
     println!();
 }
 
-fn gcd(mut a: u64, mut b: u64) -> u64 {
+fn gcd(mut a: u128, mut b: u128) -> u128 {
     while b != 0 {
         let t = b;
         b = a % b;
         a = t;
+    }
+    a
+}
+
+fn fac(mut n: u128) -> u128 {
+    let mut result = 1;
+    while n > 1 {
+        result *= n;
+        n -= 1;
+    }
+    result
+}
+
+fn fib(n: u128) -> u128 {
+    let mut a = 0;
+    let mut b = 1;
+    for _ in 0..n {
+        let t = a;
+        a = b;
+        b += t;
     }
     a
 }
