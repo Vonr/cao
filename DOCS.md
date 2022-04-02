@@ -61,7 +61,7 @@
 - \<num\> \<num\> max - Pushes the maximum of the top two elements of the stack
 - \<num\> \<num\> dp - Pushes the truncated decimal representation of the top two elements of the stack
 - \<num\> \<index\> store - Stores the top element of the stack at the specified index in the pocket
-- \<num\> \<num\> seq - Pushes the sequence of n to m exclusive where n and m are the top two elements of the stack
+- \<int\> \<int\> seq - Pushes the sequence of n to m exclusive where n and m are the top two elements of the stack
 - \<int\> \<int\> pow - Pushes the first element of the stack raised to the power of the second element of the stack
 - \<int\> \<int\> gcd - Pushes the greatest common divisor of the top two elements of the stack
 - \<int\> \<int\> \<\< - Pushes the first element of the stack shifted left by the second element of the stack
