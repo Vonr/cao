@@ -201,6 +201,8 @@ fn calc(args: &mut Vec<String>) {
                                     ">" => stack.push((b > a) as u8 as f64),
                                     "<=" => stack.push((b <= a) as u8 as f64),
                                     ">=" => stack.push((b >= a) as u8 as f64),
+                                    "~" => stack.push(((a - b).abs() < 1e-6) as u8 as f64),
+                                    "~=" => stack.push(((a - b).abs() < 1e-6) as u8 as f64),
                                     "store" => {
                                         if a.fract() == 0.0 {
                                             let pos = a as u128;
