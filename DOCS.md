@@ -1,5 +1,11 @@
 # Documentation
 
+## Disclaimer
+
+This documentation is incomplete and may be inaccurate or have missing features.
+
+You may be interested in looking at the [source code](https://github.com/Vonr/cao/blob/master/src/bin/cao.rs) instead
+
 ### *-argument operations:
 
 - pi - Adds π to the stack
@@ -58,9 +64,10 @@
 - \<num\> \<num\> \<= - Pushes 1 if the top two elements of the stack are less than or equal to, 0 otherwise
 - \<num\> \<num\> \> - Pushes 1 if the top two elements of the stack are greater than, 0 otherwise
 - \<num\> \<num\> \>= - Pushes 1 if the top two elements of the stack are greater than or equal to, 0 otherwise
+- \<num\> \<num\> min - Pushes the minimum of the top two elements of the stack
 - \<num\> \<num\> max - Pushes the maximum of the top two elements of the stack
-- \<num\> \<num\> dp - Pushes the truncated decimal representation of the top two elements of the stack
 - \<num\> \<index\> store - Stores the top element of the stack at the specified index in the pocket
+- \<num\> \<int\> dp - Pushes the truncated decimal representation of the top two elements of the stack
 - \<int\> \<int\> seq - Pushes the sequence of n to m exclusive where n and m are the top two elements of the stack
 - \<int\> \<int\> pow - Pushes the first element of the stack raised to the power of the second element of the stack
 - \<int\> \<int\> gcd - Pushes the greatest common divisor of the top two elements of the stack
@@ -72,3 +79,8 @@
 - \<int\> \<int\> min - Pushes the minimum of the top two elements of the stack
 - \<num\> \<num\> over - Pushes the second element of the stack over the top element of the stack
 - \<num\> \<num\> swap - Swaps the top two elements of the stack
+
+#### Where
+- \<num\> is any real number, both integer and decimal.
+- \<int\> is any real integer
+- \<index\> is an alias to \<int\>, which is any real integer
