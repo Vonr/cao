@@ -51,6 +51,8 @@
 - <num> <num> mod - Pushes the modulus of the top two elements of the stack
 - <num> <num> % - Pushes the modulus of the top two elements of the stack
 - <num> <num> = - Pushes 1 if the top two elements of the stack are equal, 0 otherwise
+- <num> <num> ~ - Pushes 1 if the top two elements of the stack are approximately equal, 0 otherwise
+- <num> <num> ~= - Pushes 1 if the top two elements of the stack are approximately equal, 0 otherwise
 - <num> <num> != - Pushes 1 if the top two elements of the stack are not equal, 0 otherwise
 - <num> <num> < - Pushes 1 if the top two elements of the stack are less than, 0 otherwise
 - <num> <num> <= - Pushes 1 if the top two elements of the stack are less than or equal to, 0 otherwise
