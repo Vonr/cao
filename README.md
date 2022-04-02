@@ -16,3 +16,7 @@ $ cao '2 2 30 ^ * 1 - prime'
 $ cao 372 64 gcd
 4
 ```
+
+## Documentation
+
+Refer to [DOCS.md](https://github.com/Vonr/cao/blob/master/DOCS.md)
