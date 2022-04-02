@@ -101,9 +101,6 @@ fn calc(args: &mut Vec<String>) {
                                     exit(1);
                                 }
                             }
-                            "remove" => {
-                                pocket.remove(&(a as u128));
-                            }
                             "abs" => stack.push(a.abs()),
                             "sqrt" => stack.push(a.sqrt()),
                             "sin" => stack.push(a.sin()),
