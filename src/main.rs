@@ -1,7 +1,9 @@
 use std::{
+    collections::BTreeMap,
     env,
     io::{self, BufRead},
     ops::{Shl, Shr},
+    process::exit,
     u128,
 };
 
@@ -16,19 +18,25 @@ fn parse_args() {
                 out.push(op.to_owned());
             }
         }
-        calc(&out);
+        calc(&mut out);
     } else {
-        let stdin = io::stdin().lock();
+        let mut stdin = io::stdin().lock();
         let mut out = Vec::new();
-        for line in stdin.lines() {
-            if let Ok(line) = line {
-                out.push("".to_owned());
-                for word in line.split_ascii_whitespace() {
-                    out.push(word.to_owned());
-                }
-                calc(&out);
-                out.clear();
+        let mut line = String::new();
+        while let Ok(bytes) = stdin.read_line(&mut line) {
+            if bytes == 0 {
+                break;
             }
+
+            for word in line
+                .trim_end_matches(|c| c == '\n' || c == '\r')
+                .split_ascii_whitespace()
+            {
+                out.push(word.to_owned());
+            }
+            calc(&mut out);
+            line.clear();
+            out.clear();
         }
     }
 }
@@ -37,10 +45,18 @@ fn main() {
     parse_args();
 }
 
-fn calc(args: &Vec<String>) {
+fn calc(args: &mut Vec<String>) {
     let mut stack: Vec<f64> = Vec::with_capacity(8);
+    let mut pocket: BTreeMap<u128, f64> = BTreeMap::new();
+    let mut index = 0;
+    let mut size = args.len();
 
-    for arg in args.into_iter().skip(1) {
+    loop {
+        index += 1;
+        if index >= size {
+            break;
+        }
+        let arg = args.get(index).unwrap();
         match arg.parse() {
             Ok(num) => stack.push(num),
             Err(_) => {
@@ -49,66 +65,18 @@ fn calc(args: &Vec<String>) {
                     "pi" => stack.push(std::f64::consts::PI),
                     "tau" => stack.push(std::f64::consts::TAU),
                     "e" => stack.push(std::f64::consts::E),
-                    "sum" => {
-                        let mut sum = 0.0;
-                        for num in stack.drain(..) {
-                            sum += num;
-                        }
-                        stack.push(sum);
+                    "len" => {
+                        stack.push(stack.len() as f64);
                     }
-                    "mean" => {
-                        let mut sum = 0.0;
-                        let length = stack.len() as f64;
-                        for num in stack.drain(..) {
-                            sum += num;
+                    "fold" => {
+                        let stack_size = stack.len() - 1;
+                        let op = args.get(index - 1).unwrap().to_owned();
+                        for _ in 0..stack_size {
+                            args.insert(index + 1, op.clone());
                         }
-                        stack.push(sum / length);
+                        size += stack_size;
                     }
-                    "prod" => {
-                        let mut prod = 1.0;
-                        for num in stack.drain(..) {
-                            prod *= num;
-                        }
-                        stack.push(prod);
-                    }
-                    "gmin" => {
-                        let mut min = std::f64::MAX;
-                        for num in stack.drain(..) {
-                            if num < min {
-                                min = num;
-                            }
-                        }
-                        stack.push(min);
-                    }
-                    "gmax" => {
-                        let mut max = std::f64::MIN;
-                        for num in stack.drain(..) {
-                            if num > max {
-                                max = num;
-                            }
-                        }
-                        stack.push(max);
-                    }
-                    "sd" => {
-                        let mut sum = 0.0;
-                        let mut sum_sq = 0.0;
-                        let size = stack.len() as f64;
-                        for num in stack.drain(..) {
-                            sum += num;
-                            sum_sq += num * num;
-                        }
-                        let mean = sum / size;
-                        stack.push((sum_sq / size - mean * mean).sqrt())
-                    }
-                    "eq" => {
-                        let mut eq = true;
-                        let mut last = stack.pop().unwrap();
-                        for num in stack.drain(..) {
-                            eq = eq && num == last;
-                            last = num;
-                        }
-                        stack.push(eq as u8 as f64);
-                    }
+                    "rev" => stack.reverse(),
 
                     _ => {
                         let a = stack.pop().unwrap();
@@ -118,6 +86,24 @@ fn calc(args: &Vec<String>) {
                                 stack.push(a)
                             }
                             "pop" => {}
+                            "take" => {
+                                if a.fract() == 0.0 {
+                                    let pos = &(a as u128);
+                                    if pocket.contains_key(pos) {
+                                        stack.push(pocket.get(pos).unwrap().to_owned());
+                                        pocket.remove(pos);
+                                    } else {
+                                        eprintln!("take: pocket is empty");
+                                        exit(1);
+                                    }
+                                } else {
+                                    eprintln!("take: requires integer index");
+                                    exit(1);
+                                }
+                            }
+                            "remove" => {
+                                pocket.remove(&(a as u128));
+                            }
                             "abs" => stack.push(a.abs()),
                             "sqrt" => stack.push(a.sqrt()),
                             "sin" => stack.push(a.sin()),
@@ -131,6 +117,7 @@ fn calc(args: &Vec<String>) {
                                     stack.push(fac(a as u128) as f64)
                                 } else {
                                     eprintln!("fac: requires integer operand");
+                                    exit(1);
                                 }
                             }
                             "fib" => {
@@ -138,6 +125,7 @@ fn calc(args: &Vec<String>) {
                                     stack.push(fib(a as u128) as f64)
                                 } else {
                                     eprintln!("fib: requires integer operand");
+                                    exit(1);
                                 }
                             }
                             "ceil" => stack.push(a.ceil()),
@@ -162,6 +150,7 @@ fn calc(args: &Vec<String>) {
                                     stack.push(!(a as i64) as f64);
                                 } else {
                                     eprintln!("not: requires integer operand");
+                                    exit(1);
                                 }
                             }
                             "unot" => {
@@ -169,6 +158,7 @@ fn calc(args: &Vec<String>) {
                                     stack.push(!(a as u64) as f64);
                                 } else {
                                     eprintln!("not: requires integer operand");
+                                    exit(1);
                                 }
                             }
                             "prime" => {
@@ -176,6 +166,7 @@ fn calc(args: &Vec<String>) {
                                     stack.push(num_prime::nt_funcs::is_prime64(a as u64) as u8 as f64)
                                 } else {
                                     eprintln!("not: requires integer operand");
+                                    exit(1);
                                 }
                             }
 
@@ -196,6 +187,20 @@ fn calc(args: &Vec<String>) {
                                     ">" => stack.push((b > a) as u8 as f64),
                                     "<=" => stack.push((b <= a) as u8 as f64),
                                     ">=" => stack.push((b >= a) as u8 as f64),
+                                    "store" => {
+                                        if a.fract() == 0.0 {
+                                            let pos = a as u128;
+                                            if pocket.contains_key(&pos) {
+                                                eprintln!("hold: pocket is full at {}", pos);
+                                                exit(1);
+                                            } else {
+                                                pocket.insert(pos, b);
+                                            }
+                                        } else {
+                                            eprintln!("hold: requires integer index");
+                                            exit(1);
+                                        }
+                                    }
                                     "seq" => {
                                         if a.fract() == 0.0 && b.fract() == 0.0 {
                                             for i in b as u64..a as u64 {
@@ -203,6 +208,7 @@ fn calc(args: &Vec<String>) {
                                             }
                                         } else {
                                             eprintln!("seq: requires integer operands");
+                                            exit(1);
                                         }
                                     }
                                     "over" => {
@@ -225,6 +231,7 @@ fn calc(args: &Vec<String>) {
                                             stack.push(gcd(b as u128, a as u128) as f64);
                                         } else {
                                             eprintln!("gcd: requires integer operands");
+                                            exit(1);
                                         }
                                     }
                                     "<<" => {
@@ -232,6 +239,7 @@ fn calc(args: &Vec<String>) {
                                             stack.push((b as u64).shl(a as u64) as f64);
                                         } else {
                                             eprintln!("<<: requires integer operands");
+                                            exit(1);
                                         }
                                     }
                                     ">>" => {
@@ -239,6 +247,7 @@ fn calc(args: &Vec<String>) {
                                             stack.push((a as u64).shr(b as u64) as f64);
                                         } else {
                                             eprintln!(">>: requires integer operands");
+                                            exit(1);
                                         }
                                     }
                                     "or" => {
@@ -246,6 +255,7 @@ fn calc(args: &Vec<String>) {
                                             stack.push((b as i64 | a as i64) as f64);
                                         } else {
                                             eprintln!("or: requires integer operands");
+                                            exit(1);
                                         }
                                     }
                                     "and" => {
@@ -253,6 +263,7 @@ fn calc(args: &Vec<String>) {
                                             stack.push((b as i64 & a as i64) as f64);
                                         } else {
                                             eprintln!("and: requires integer operands");
+                                            exit(1);
                                         }
                                     }
                                     "xor" => {
@@ -260,12 +271,13 @@ fn calc(args: &Vec<String>) {
                                             stack.push((b as i64 ^ a as i64) as f64);
                                         } else {
                                             eprintln!("xor: requires integer operands");
+                                            exit(1);
                                         }
                                     }
 
                                     _ => {
                                         eprintln!("{}: invalid operator", arg);
-                                        return;
+                                        exit(1);
                                     }
                                 }
                             }
