@@ -44,6 +44,7 @@ You may be interested in looking at the [source code](https://github.com/Vonr/ca
 - \<num\> trunc - Pushes the truncated value of the top element of the stack
 - \<int\> fac - Pushes the factorial of the top element of the stack
 - \<int\> fib - Pushes the nth Fibonacci number
+- \<int\> prime - Pushes 1 if the top element is prime, 0 otherwise
 
 
 ### 2-argument operations:
