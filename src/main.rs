@@ -97,7 +97,7 @@ fn calc(args: &mut Vec<String>) {
                                         exit(1);
                                     }
                                 } else {
-                                    eprintln!("take: requires integer index");
+                                    eprintln!("take: index must be integer");
                                     exit(1);
                                 }
                             }
@@ -113,7 +113,7 @@ fn calc(args: &mut Vec<String>) {
                                 if a.fract() == 0.0 {
                                     stack.push(fac(a as u128) as f64)
                                 } else {
-                                    eprintln!("fac: requires integer operand");
+                                    eprintln!("fac: input must be integer");
                                     exit(1);
                                 }
                             }
@@ -121,7 +121,7 @@ fn calc(args: &mut Vec<String>) {
                                 if a.fract() == 0.0 {
                                     stack.push(fib(a as u128) as f64)
                                 } else {
-                                    eprintln!("fib: requires integer operand");
+                                    eprintln!("fib: input must be integer");
                                     exit(1);
                                 }
                             }
@@ -146,7 +146,7 @@ fn calc(args: &mut Vec<String>) {
                                 if a.fract() == 0.0 {
                                     stack.push(!(a as i64) as f64);
                                 } else {
-                                    eprintln!("not: requires integer operand");
+                                    eprintln!("not: input must be integer");
                                     exit(1);
                                 }
                             }
@@ -154,7 +154,7 @@ fn calc(args: &mut Vec<String>) {
                                 if a.fract() == 0.0 {
                                     stack.push(!(a as u64) as f64);
                                 } else {
-                                    eprintln!("not: requires integer operand");
+                                    eprintln!("unot: input must be integer");
                                     exit(1);
                                 }
                             }
@@ -162,7 +162,7 @@ fn calc(args: &mut Vec<String>) {
                                 if a.fract() == 0.0 {
                                     stack.push(num_prime::nt_funcs::is_prime64(a as u64) as u8 as f64)
                                 } else {
-                                    eprintln!("not: requires integer operand");
+                                    eprintln!("prime: input must be integer");
                                     exit(1);
                                 }
                             }
@@ -194,7 +194,7 @@ fn calc(args: &mut Vec<String>) {
                                                 pocket.insert(pos, b);
                                             }
                                         } else {
-                                            eprintln!("hold: requires integer index");
+                                            eprintln!("hold: index must be integer");
                                             exit(1);
                                         }
                                     }
@@ -204,7 +204,7 @@ fn calc(args: &mut Vec<String>) {
                                                 stack.push(i as f64);
                                             }
                                         } else {
-                                            eprintln!("seq: requires integer operands");
+                                            eprintln!("seq: indices must be integers");
                                             exit(1);
                                         }
                                     }
@@ -227,7 +227,7 @@ fn calc(args: &mut Vec<String>) {
                                         if a.fract() == 0.0 && b.fract() == 0.0 {
                                             stack.push(gcd(b as u128, a as u128) as f64);
                                         } else {
-                                            eprintln!("gcd: requires integer operands");
+                                            eprintln!("gcd: inputs must be integers");
                                             exit(1);
                                         }
                                     }
@@ -235,7 +235,7 @@ fn calc(args: &mut Vec<String>) {
                                         if a.fract() == 0.0 && b.fract() == 0.0 {
                                             stack.push((b as u64).shl(a as u64) as f64);
                                         } else {
-                                            eprintln!("<<: requires integer operands");
+                                            eprintln!("<<: inputs must be integers");
                                             exit(1);
                                         }
                                     }
@@ -243,7 +243,7 @@ fn calc(args: &mut Vec<String>) {
                                         if a.fract() == 0.0 && b.fract() == 0.0 {
                                             stack.push((a as u64).shr(b as u64) as f64);
                                         } else {
-                                            eprintln!(">>: requires integer operands");
+                                            eprintln!(">>: inputs must be integers");
                                             exit(1);
                                         }
                                     }
@@ -251,7 +251,7 @@ fn calc(args: &mut Vec<String>) {
                                         if a.fract() == 0.0 && b.fract() == 0.0 {
                                             stack.push((b as i64 | a as i64) as f64);
                                         } else {
-                                            eprintln!("or: requires integer operands");
+                                            eprintln!("or: inputs must be integers");
                                             exit(1);
                                         }
                                     }
@@ -259,7 +259,7 @@ fn calc(args: &mut Vec<String>) {
                                         if a.fract() == 0.0 && b.fract() == 0.0 {
                                             stack.push((b as i64 & a as i64) as f64);
                                         } else {
-                                            eprintln!("and: requires integer operands");
+                                            eprintln!("and: inputs must be integers");
                                             exit(1);
                                         }
                                     }
@@ -267,7 +267,7 @@ fn calc(args: &mut Vec<String>) {
                                         if a.fract() == 0.0 && b.fract() == 0.0 {
                                             stack.push((b as i64 ^ a as i64) as f64);
                                         } else {
-                                            eprintln!("xor: requires integer operands");
+                                            eprintln!("xor: inputs must be integers");
                                             exit(1);
                                         }
                                     }
