@@ -1,4 +1,5 @@
 # CaO
+![Crates.io](https://img.shields.io/crates/v/calcium-oxide)
 
 Calc-ium Oxide, a simple stack based command line calculator written in rust
 
