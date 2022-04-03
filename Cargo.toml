@@ -8,6 +8,7 @@ homepage = "https://github.com/Vonr/cao"
 repository = "https://github.com/Vonr/cao"
 keywords = ["calculator", "cli"]
 edition = "2021"
+include = ["src/bin/cao.rs", "README.md", "UNLICENSE"]
 
 [[bin]]
 name = "cao"
