@@ -219,9 +219,16 @@ fn calc(args: &mut Vec<String>) {
                                     }
                                     "seq" => {
                                         if a.fract() == 0.0 && b.fract() == 0.0 {
-                                            for i in b as u64..a as u64 {
-                                                stack.push(i as f64);
-                                            }
+                                            let ai = a as usize;
+                                            let bi = b as usize;
+                                            let mut curr = bi - 1;
+                                            stack.resize_with(
+                                                (stack.len() + ai - bi) as usize,
+                                                || {
+                                                    curr += 1;
+                                                    curr as f64
+                                                },
+                                            );
                                         } else {
                                             eprintln!("seq: indices must be integers");
                                             exit(1);
