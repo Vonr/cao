@@ -78,19 +78,19 @@ fn calc(args: &mut Vec<String>) {
                     }
                     "map" => {
                         let op = args.get(index - 1).unwrap().to_owned();
-                        let mut args: Vec<String> =
+                        let mut new_args: Vec<String> =
                             Vec::with_capacity(size - index + stack.len() * 2 + 1);
                         let stack_size = stack.len();
-                        args.push("".to_owned());
+                        new_args.push("".to_owned());
                         for i in 0..stack_size - 1 {
-                            args.push(stack[i].to_string());
-                            args.push(op.to_owned());
+                            new_args.push(stack[i].to_string());
+                            new_args.push(op.to_owned());
                         }
-                        args.push(stack.pop().unwrap().to_string());
+                        new_args.push(stack.pop().unwrap().to_string());
                         for i in index + 1..size {
-                            args.push(args.get(i).unwrap().to_owned());
+                            new_args.push(args.get(i).unwrap().to_owned());
                         }
-                        calc(&mut args);
+                        calc(&mut new_args);
                         return;
                     }
                     "rev" => stack.reverse(),
