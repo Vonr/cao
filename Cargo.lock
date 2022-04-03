@@ -44,7 +44,7 @@ dependencies = [
 
 [[package]]
 name = "calcium-oxide"
-version = "0.1.9"
+version = "0.1.10"
 dependencies = [
  "atty",
  "num-prime",
