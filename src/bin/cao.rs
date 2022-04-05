@@ -1,22 +1,20 @@
 use std::{
     collections::BTreeMap,
     env,
-    io::{self, BufRead},
+    io::{self, BufRead, BufWriter, Write},
     ops::{Shl, Shr},
     process::exit,
     u128,
 };
 
-fn parse_args() {
+fn main() {
     let istty = atty::is(atty::Stream::Stdin);
 
     if istty {
         let args = env::args();
-        let mut out = Vec::new();
-        for arg in args {
-            for op in arg.split_ascii_whitespace() {
-                out.push(op.to_owned());
-            }
+        let mut out = Vec::with_capacity(args.size_hint().0 - 1);
+        for arg in args.skip(1) {
+            out.push(arg.to_owned());
         }
         calc(&mut out, None);
     } else {
@@ -41,10 +39,6 @@ fn parse_args() {
     }
 }
 
-fn main() {
-    parse_args();
-}
-
 fn calc(args: &mut Vec<String>, pocket: Option<BTreeMap<u128, f64>>) {
     let mut stack: Vec<f64> = Vec::with_capacity(8);
     let mut pocket = pocket.unwrap_or(BTreeMap::new());
@@ -52,7 +46,6 @@ fn calc(args: &mut Vec<String>, pocket: Option<BTreeMap<u128, f64>>) {
     let mut size = args.len();
 
     loop {
-        index += 1;
         if index >= size {
             break;
         }
@@ -82,7 +75,6 @@ fn calc(args: &mut Vec<String>, pocket: Option<BTreeMap<u128, f64>>) {
                         let mut new_args: Vec<String> =
                             Vec::with_capacity(size - index + stack.len() * 2 + 1);
                         let stack_size = stack.len();
-                        new_args.push("".to_owned());
                         for i in 0..stack_size - 1 {
                             new_args.push(stack[i].to_string());
                             new_args.push(op.to_owned());
@@ -316,11 +308,16 @@ fn calc(args: &mut Vec<String>, pocket: Option<BTreeMap<u128, f64>>) {
                 }
             }
         }
+
+        index += 1;
     }
+    let stdout = io::stdout().lock();
+    let mut writer = BufWriter::with_capacity(16384, stdout);
     for num in stack {
-        print!("{} ", num);
+        write!(writer, "{} ", num).unwrap();
     }
-    println!();
+    writer.write_all(b"\r\n").unwrap();
+    writer.flush().unwrap();
 }
 
 fn gcd(mut a: u128, mut b: u128) -> u128 {
