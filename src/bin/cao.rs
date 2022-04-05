@@ -18,7 +18,7 @@ fn parse_args() {
                 out.push(op.to_owned());
             }
         }
-        calc(&mut out);
+        calc(&mut out, None);
     } else {
         let mut stdin = io::stdin().lock();
         let mut out = Vec::new();
@@ -34,7 +34,7 @@ fn parse_args() {
             {
                 out.push(word.to_owned());
             }
-            calc(&mut out);
+            calc(&mut out, None);
             line.clear();
             out.clear();
         }
@@ -45,9 +45,9 @@ fn main() {
     parse_args();
 }
 
-fn calc(args: &mut Vec<String>) {
+fn calc(args: &mut Vec<String>, pocket: Option<BTreeMap<u128, f64>>) {
     let mut stack: Vec<f64> = Vec::with_capacity(8);
-    let mut pocket: BTreeMap<u128, f64> = BTreeMap::new();
+    let mut pocket = pocket.unwrap_or(BTreeMap::new());
     let mut index = 0;
     let mut size = args.len();
 
@@ -69,11 +69,12 @@ fn calc(args: &mut Vec<String>) {
                         stack.push(stack.len() as f64);
                     }
                     "fold" => {
-                        let stack_size = stack.len() - 1;
                         let op = args.get(index - 1).unwrap().to_owned();
-                        for _ in 0..stack_size {
-                            args.insert(index + 1, op.clone());
-                        }
+                        let stack_size = stack.len() - 1;
+                        let mut after = args.split_off(index - 1);
+                        after.remove(1);
+                        args.resize_with(args.len() + stack_size + 1, || op.clone());
+                        args.append(&mut after);
                         size += stack_size;
                     }
                     "map" => {
@@ -90,7 +91,7 @@ fn calc(args: &mut Vec<String>) {
                         for i in index + 1..size {
                             new_args.push(args.get(i).unwrap().to_owned());
                         }
-                        calc(&mut new_args);
+                        calc(&mut new_args, Some(pocket));
                         return;
                     }
                     "rev" => stack.reverse(),
@@ -324,9 +325,7 @@ fn calc(args: &mut Vec<String>) {
 
 fn gcd(mut a: u128, mut b: u128) -> u128 {
     while b != 0 {
-        let t = b;
-        b = a % b;
-        a = t;
+        (a, b) = (b, a % b);
     }
     a
 }
@@ -344,9 +343,7 @@ fn fib(n: u128) -> u128 {
     let mut a = 0;
     let mut b = 1;
     for _ in 0..n {
-        let t = a;
-        a = b;
-        b += t;
+        (a, b) = (b, a + b);
     }
     a
 }
