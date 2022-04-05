@@ -14,7 +14,9 @@ fn main() {
         let args = env::args();
         let mut out = Vec::with_capacity(args.size_hint().0 - 1);
         for arg in args.skip(1) {
-            out.push(arg.to_owned());
+            arg.split_ascii_whitespace().for_each(|word| {
+                out.push(word.to_owned());
+            });
         }
         calc(&mut out, None);
     } else {
