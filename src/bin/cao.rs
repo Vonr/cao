@@ -57,7 +57,7 @@ fn calc(args: &mut Vec<String>) {
             break;
         }
         let arg = args.get(index).unwrap();
-        match arg.parse() {
+        match fast_float::parse(arg) {
             Ok(num) => stack.push(num),
             Err(_) => {
                 let op = arg.to_lowercase();
