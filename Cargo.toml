@@ -1,6 +1,6 @@
 [package]
 name = "calcium-oxide"
-version = "0.1.10"
+version = "0.1.11"
 description = "Calc-ium Oxide, a simple stack based command line calculator written in rust."
 license = "Unlicense"
 readme = "README.md"
