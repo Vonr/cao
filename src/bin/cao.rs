@@ -206,8 +206,7 @@ fn calc(args: &mut Vec<Input>, pocket: Option<BTreeMap<u128, f64>>) {
                                     "-" => stack.push(b - a),
                                     "*" => stack.push(a * b),
                                     "/" => stack.push(b / a),
-                                    "^" => stack.push(b.powf(a)),
-                                    "**" => stack.push(b.powf(a)),
+                                    "^" | "**" => stack.push(b.powf(a)),
                                     "mod" => stack.push(b % a),
                                     "%" => stack.push(b % a),
                                     "logn" => stack.push(b.log2() / a.log2()),
@@ -217,8 +216,7 @@ fn calc(args: &mut Vec<Input>, pocket: Option<BTreeMap<u128, f64>>) {
                                     ">" => stack.push((b > a) as u8 as f64),
                                     "<=" => stack.push((b <= a) as u8 as f64),
                                     ">=" => stack.push((b >= a) as u8 as f64),
-                                    "~" => stack.push(((a - b).abs() < 1e-6) as u8 as f64),
-                                    "~=" => stack.push(((a - b).abs() < 1e-6) as u8 as f64),
+                                    "~" | "~=" => stack.push(((a - b).abs() < 1e-6) as u8 as f64),
                                     "store" => {
                                         if a.fract() == 0.0 {
                                             let pos = a as u128;
