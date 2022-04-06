@@ -1,3 +1,4 @@
+use crate::Input::*;
 use std::{
     collections::BTreeMap,
     env,
@@ -7,6 +8,20 @@ use std::{
     u128,
 };
 
+enum Input {
+    Op(String),
+    Num(f64),
+}
+
+impl Clone for Input {
+    fn clone(&self) -> Self {
+        match self {
+            Op(s) => Op(s.clone()),
+            Num(n) => Num(*n),
+        }
+    }
+}
+
 fn main() {
     let istty = atty::is(atty::Stream::Stdin);
 
@@ -14,9 +29,11 @@ fn main() {
         let args = env::args();
         let mut out = Vec::with_capacity(args.size_hint().0 - 1);
         for arg in args.skip(1) {
-            arg.split_ascii_whitespace().for_each(|word| {
-                out.push(word.to_owned());
-            });
+            arg.split_ascii_whitespace()
+                .for_each(|word| match fast_float::parse(word) {
+                    Ok(num) => out.push(Num(num)),
+                    Err(_) => out.push(Op(word.to_string())),
+                });
         }
         calc(&mut out, None);
     } else {
@@ -32,7 +49,10 @@ fn main() {
                 .trim_end_matches(|c| c == '\n' || c == '\r')
                 .split_ascii_whitespace()
             {
-                out.push(word.to_owned());
+                match fast_float::parse(word) {
+                    Ok(num) => out.push(Num(num)),
+                    Err(_) => out.push(Op(word.to_string())),
+                }
             }
             calc(&mut out, None);
             line.clear();
@@ -41,7 +61,7 @@ fn main() {
     }
 }
 
-fn calc(args: &mut Vec<String>, pocket: Option<BTreeMap<u128, f64>>) {
+fn calc(args: &mut Vec<Input>, pocket: Option<BTreeMap<u128, f64>>) {
     let mut stack: Vec<f64> = Vec::with_capacity(8);
     let mut pocket = pocket.unwrap_or(BTreeMap::new());
     let mut index = 0;
@@ -52,10 +72,10 @@ fn calc(args: &mut Vec<String>, pocket: Option<BTreeMap<u128, f64>>) {
             break;
         }
         let arg = args.get(index).unwrap();
-        match fast_float::parse(arg) {
-            Ok(num) => stack.push(num),
-            Err(_) => {
-                let op = arg.to_lowercase();
+        match arg {
+            Num(num) => stack.push(*num),
+            Op(op) => {
+                let op = op.to_lowercase();
                 match op.as_ref() {
                     "pi" => stack.push(std::f64::consts::PI),
                     "tau" => stack.push(std::f64::consts::TAU),
@@ -74,14 +94,14 @@ fn calc(args: &mut Vec<String>, pocket: Option<BTreeMap<u128, f64>>) {
                     }
                     "map" => {
                         let op = args.get(index - 1).unwrap().to_owned();
-                        let mut new_args: Vec<String> =
+                        let mut new_args: Vec<Input> =
                             Vec::with_capacity(size - index + stack.len() * 2 + 1);
                         let stack_size = stack.len();
                         for i in 0..stack_size - 1 {
-                            new_args.push(stack[i].to_string());
-                            new_args.push(op.to_owned());
+                            new_args.push(Num(stack[i]));
+                            new_args.push(op.clone());
                         }
-                        new_args.push(stack.pop().unwrap().to_string());
+                        new_args.push(Num(stack.pop().unwrap()));
                         for i in index + 1..size {
                             new_args.push(args.get(i).unwrap().to_owned());
                         }
@@ -300,7 +320,7 @@ fn calc(args: &mut Vec<String>, pocket: Option<BTreeMap<u128, f64>>) {
                                     }
 
                                     _ => {
-                                        eprintln!("{}: invalid operator", arg);
+                                        eprintln!("{}: invalid operator", op);
                                         exit(1);
                                     }
                                 }
