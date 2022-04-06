@@ -210,6 +210,7 @@ fn calc(args: &mut Vec<Input>, pocket: Option<BTreeMap<u128, f64>>) {
                                     "**" => stack.push(b.powf(a)),
                                     "mod" => stack.push(b % a),
                                     "%" => stack.push(b % a),
+                                    "logn" => stack.push(b.log2() / a.log2()),
                                     "=" => stack.push((a == b) as u8 as f64),
                                     "!=" => stack.push((a != b) as u8 as f64),
                                     "<" => stack.push((b < a) as u8 as f64),
