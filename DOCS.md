@@ -36,7 +36,7 @@ You may be interested in looking at the [source code](https://github.com/Vonr/ca
 - \<num\> acosh - Pushes the hyperbolic arccosine of the top element of the stack
 - \<num\> atanh - Pushes the hyperbolic arctangent of the top element of the stack
 - \<num\> ln - Pushes the natural logarithm of the top element of the stack
-- \<num\> log - Pushes the natural logarithm of the top element of the stack
+- \<num\> log - Pushes the base-10 logarithm of the top element of the stack
 - \<num\> log2 - Pushes the base-2 logarithm of the top element of the stack
 - \<num\> ceil - Pushes the ceiling of the top element of the stack
 - \<num\> floor - Pushes the floor of the top element of the stack
@@ -57,6 +57,7 @@ You may be interested in looking at the [source code](https://github.com/Vonr/ca
 - \<num\> \<num\> ** - Pushes the power of the top two elements of the stack
 - \<num\> \<num\> mod - Pushes the modulus of the top two elements of the stack
 - \<num\> \<num\> % - Pushes the modulus of the top two elements of the stack
+- \<num\> \<num\> logn - Pushes the base-top\_element logarithm of the next element
 - \<num\> \<num\> = - Pushes 1 if the top two elements of the stack are equal, 0 otherwise
 - \<num\> \<num\> ~ - Pushes 1 if the top two elements of the stack are approximately equal, 0 otherwise
 - \<num\> \<num\> ~= - Pushes 1 if the top two elements of the stack are approximately equal, 0 otherwise
