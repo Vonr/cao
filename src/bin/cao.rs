@@ -27,7 +27,7 @@ fn main() {
 
     if istty {
         let args = env::args();
-        let mut out = Vec::with_capacity(args.size_hint().0 - 1);
+        let mut out = Vec::new();
         for arg in args.skip(1) {
             arg.split_ascii_whitespace()
                 .for_each(|word| match fast_float::parse(word) {
