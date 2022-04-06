@@ -333,7 +333,7 @@ fn calc(args: &mut Vec<Input>, pocket: Option<BTreeMap<u128, f64>>) {
         index += 1;
     }
     let stdout = io::stdout().lock();
-    let mut writer = BufWriter::with_capacity(16384, stdout);
+    let mut writer = BufWriter::new(stdout);
     for num in stack {
         write!(writer, "{} ", num).unwrap();
     }
