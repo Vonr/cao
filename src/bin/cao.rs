@@ -5,18 +5,19 @@ use std::{
     io::{self, BufRead, BufWriter, Write},
     ops::{Shl, Shr},
     process::exit,
+    rc::Rc,
     u128,
 };
 
 enum Input {
-    Op(String),
+    Op(Rc<String>),
     Num(f64),
 }
 
 impl Clone for Input {
     fn clone(&self) -> Self {
         match self {
-            Op(s) => Op(s.clone()),
+            Op(s) => Op(Rc::clone(s)),
             Num(n) => Num(*n),
         }
     }
@@ -32,7 +33,7 @@ fn main() {
             arg.split_ascii_whitespace()
                 .for_each(|word| match fast_float::parse(word) {
                     Ok(num) => out.push(Num(num)),
-                    Err(_) => out.push(Op(word.to_string())),
+                    Err(_) => out.push(Op(Rc::new(word.to_string()))),
                 });
         }
         calc(&mut out, None);
@@ -51,7 +52,7 @@ fn main() {
             {
                 match fast_float::parse(word) {
                     Ok(num) => out.push(Num(num)),
-                    Err(_) => out.push(Op(word.to_string())),
+                    Err(_) => out.push(Op(Rc::new(word.to_string()))),
                 }
             }
             calc(&mut out, None);
@@ -75,7 +76,7 @@ fn calc(args: &mut Vec<Input>, pocket: Option<HashMap<u128, f64>>) {
         match arg {
             Num(num) => stack.push(*num),
             Op(op) => {
-                let op = op.to_lowercase();
+                let op = op.to_ascii_lowercase();
                 match op.as_ref() {
                     "pi" => stack.push(std::f64::consts::PI),
                     "tau" => stack.push(std::f64::consts::TAU),
