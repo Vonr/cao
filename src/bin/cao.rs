@@ -1,6 +1,6 @@
 use crate::Input::*;
 use std::{
-    collections::BTreeMap,
+    collections::{hash_map::Entry, HashMap},
     env,
     io::{self, BufRead, BufWriter, Write},
     ops::{Shl, Shr},
@@ -61,9 +61,9 @@ fn main() {
     }
 }
 
-fn calc(args: &mut Vec<Input>, pocket: Option<BTreeMap<u128, f64>>) {
+fn calc(args: &mut Vec<Input>, pocket: Option<HashMap<u128, f64>>) {
     let mut stack: Vec<f64> = Vec::with_capacity(8);
-    let mut pocket = pocket.unwrap_or(BTreeMap::new());
+    let mut pocket = pocket.unwrap_or_default();
     let mut index = 0;
     let mut size = args.len();
 
@@ -97,8 +97,8 @@ fn calc(args: &mut Vec<Input>, pocket: Option<BTreeMap<u128, f64>>) {
                         let mut new_args: Vec<Input> =
                             Vec::with_capacity(size - index + stack.len() * 2 + 1);
                         let stack_size = stack.len();
-                        for i in 0..stack_size - 1 {
-                            new_args.push(Num(stack[i]));
+                        for n in stack.iter().take(stack_size - 1) {
+                            new_args.push(Num(*n));
                             new_args.push(op.clone());
                         }
                         new_args.push(Num(stack.pop().unwrap()));
@@ -220,11 +220,11 @@ fn calc(args: &mut Vec<Input>, pocket: Option<BTreeMap<u128, f64>>) {
                                     "store" => {
                                         if a.fract() == 0.0 {
                                             let pos = a as u128;
-                                            if pocket.contains_key(&pos) {
+                                            if let Entry::Vacant(e) = pocket.entry(pos) {
+                                                e.insert(b);
+                                            } else {
                                                 eprintln!("hold: pocket is full at {}", pos);
                                                 exit(1);
-                                            } else {
-                                                pocket.insert(pos, b);
                                             }
                                         } else {
                                             eprintln!("hold: index must be integer");
