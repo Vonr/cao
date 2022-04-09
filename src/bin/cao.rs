@@ -264,7 +264,7 @@ fn calc(args: &mut Vec<Input>, pocket: Option<HashMap<u128, f64>>) {
                                         if a.fract() == 0.0 {
                                             let truncated =
                                                 format!("{:.1$}", b, a.floor() as usize);
-                                            stack.push(truncated.parse().unwrap())
+                                            stack.push(fast_float::parse(truncated).unwrap())
                                         } else {
                                             eprintln!("dp: scale must be integer");
                                             exit(1);
