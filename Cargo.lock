@@ -44,7 +44,7 @@ dependencies = [
 
 [[package]]
 name = "calcium-oxide"
-version = "0.1.14"
+version = "0.1.15"
 dependencies = [
  "atty",
  "fast-float",
