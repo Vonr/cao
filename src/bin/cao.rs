@@ -36,7 +36,7 @@ fn main() {
                     Err(_) => out.push(Op(Rc::new(word.to_string()))),
                 });
         }
-        calc(&mut out, None);
+        print_stack(calc(&mut out, None));
     } else {
         let mut stdin = io::stdin().lock();
         let mut out = Vec::new();
@@ -55,14 +55,14 @@ fn main() {
                     Err(_) => out.push(Op(Rc::new(word.to_string()))),
                 }
             }
-            calc(&mut out, None);
+            print_stack(calc(&mut out, None));
             line.clear();
             out.clear();
         }
     }
 }
 
-fn calc(args: &mut Vec<Input>, pocket: Option<HashMap<u128, f64>>) {
+fn calc(args: &mut Vec<Input>, pocket: Option<HashMap<u128, f64>>) -> Vec<f64> {
     let mut stack: Vec<f64> = Vec::with_capacity(8);
     let mut pocket = pocket.unwrap_or_default();
     let mut index = 0;
@@ -106,8 +106,7 @@ fn calc(args: &mut Vec<Input>, pocket: Option<HashMap<u128, f64>>) {
                         for i in index + 1..size {
                             new_args.push(args.get(i).unwrap().to_owned());
                         }
-                        calc(&mut new_args, Some(pocket));
-                        return;
+                        return calc(&mut new_args, Some(pocket));
                     }
                     "rev" => stack.reverse(),
 
@@ -333,6 +332,10 @@ fn calc(args: &mut Vec<Input>, pocket: Option<HashMap<u128, f64>>) {
 
         index += 1;
     }
+    stack
+}
+
+fn print_stack(stack: Vec<f64>) {
     let stdout = io::stdout().lock();
     let mut writer = BufWriter::new(stdout);
     for num in stack {
@@ -342,20 +345,19 @@ fn calc(args: &mut Vec<Input>, pocket: Option<HashMap<u128, f64>>) {
     writer.flush().unwrap();
 }
 
-fn gcd(mut a: u128, mut b: u128) -> u128 {
+const fn gcd(mut a: u128, mut b: u128) -> u128 {
     while b != 0 {
         (a, b) = (b, a % b);
     }
     a
 }
 
-fn fac(mut n: u128) -> u128 {
-    let mut result = 1;
-    while n > 1 {
-        result *= n;
-        n -= 1;
+fn fac(n: u128) -> u128 {
+    let mut acc = 1;
+    for i in 2..=n {
+        acc *= i;
     }
-    result
+    acc
 }
 
 fn fib(n: u128) -> u128 {
